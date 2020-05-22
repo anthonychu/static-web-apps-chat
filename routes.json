@@ -1,16 +1,6 @@
 {
   "routes": [
     {
-      "route": "/login",
-      "serve": "/.auth/login/twitter",
-      "statusCode": 302
-    },
-    {
-      "route": "/logout",
-      "serve": "/.auth/logout",
-      "statusCode": 302
-    },
-    {
       "route": "/.auth/login/github",
       "statusCode": "404"
     },
@@ -33,6 +23,13 @@
     {
       "route": "/",
       "allowedRoles": ["authenticated"]
+    }
+  ],
+  "platformErrorOverrides": [
+    {
+      "errorType": "Unauthenticated",
+      "serve": "/.auth/login/twitter",
+      "statusCode": 302
     }
   ]
 }
