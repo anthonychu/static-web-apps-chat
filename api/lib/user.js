@@ -4,7 +4,7 @@ module.exports = {
             return 'test-user';
         }
 
-        const clientPrincipalHeader = req.headers["x-ms-client-principal"];
+        const clientPrincipalHeader = headers["x-ms-client-principal"];
         if (!clientPrincipalHeader) {
             return;
         }
