@@ -1,12 +1,13 @@
-const { getUsername } = require('../lib/user');
+const { getUser } = require('../lib/user');
 
 module.exports = async function (context, req) {
-  const sender = getUsername(req.headers);
+  const sender = getUser(req.headers).userDetails;
   const { text } = req.body;
+  const timestamp = new Date();
   if (text) {
     return {
       "target": "newMessage",
-      "arguments": [{ sender, text }]
+      "arguments": [{ sender, text, timestamp }]
     };
   }
 };

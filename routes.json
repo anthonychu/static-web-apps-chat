@@ -1,11 +1,7 @@
 {
   "routes": [
     {
-      "route": "/.auth/login/github",
-      "statusCode": "404"
-    },
-    {
-      "route": "/.auth/login/aad",
+      "route": "/.auth/login/twitter",
       "statusCode": "404"
     },
     {
@@ -28,7 +24,7 @@
   "platformErrorOverrides": [
     {
       "errorType": "Unauthenticated",
-      "serve": "/.auth/login/twitter",
+      "serve": "/.auth/login/github",
       "statusCode": 302
     }
   ]
