@@ -47,7 +47,7 @@
               <div style="display: inline-block; padding-left: 12px; max-width: 90%; vertical-align: top;">
                 <div>
                   <span class="text-info small"><strong>{{ message.sender }}</strong></span>
-                  <span class="text-info small text-muted">{{ message.ago }}</span>
+                  <span class="text-info small text-muted" :title="message.timestamp">{{ message.ago }}</span>
                 </div>
                 <div>
                   {{ message.text }}
