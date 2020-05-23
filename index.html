@@ -85,10 +85,17 @@
         }
       },
       mounted: function() {
-        setInterval(updateTimes.bind(this), 10000)
-        function updateTimes() {
+        setInterval(function updateTimes() {
           this.messages.forEach(m => m.ago = timeago.format(m.timestamp))
-        }
+        }.bind(this), 10000)
+
+        return axios.get(`${apiBaseUrl}/api/messages`)
+          .then(resp => resp.data)
+          .then(function(messageHistory) {
+            for (const message of messageHistory.reverse()) {
+              newMessage(message)
+            }
+          }.bind(this))
       }
     })
 
@@ -114,7 +121,7 @@
 
     let counter = 0
     function newMessage(message) {
-      message.id = counter++ // vue transitions need an id
+      message.id = message.RowKey || counter++
       message.ago = timeago.format(message.timestamp)
       data.messages.unshift(message)
     }

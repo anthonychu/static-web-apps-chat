@@ -1,5 +1,4 @@
 {
-  "disabled": false,
   "bindings": [
     {
       "authLevel": "anonymous",
@@ -7,7 +6,7 @@
       "direction": "in",
       "name": "req",
       "methods": [
-        "post"
+        "get"
       ],
       "route": "messages"
     },
@@ -17,16 +16,11 @@
       "name": "res"
     },
     {
-      "type": "signalR",
-      "name": "$return",
-      "hubName": "staticwebappschat",
-      "direction": "out"
-    },
-    {
       "type": "table",
-      "direction": "out",
+      "direction": "in",
       "name": "history",
       "tableName": "chatmessages",
+      "take": "50",
       "connection": "StorageConnectionString"
     }
   ]
