@@ -16,12 +16,5 @@
       "route": "/api/*",
       "allowedRoles": ["authenticated"]
     }
-  ],
-  "platformErrorOverrides": [
-    {
-      "errorType": "Unauthenticated",
-      "serve": "/.auth/login/github",
-      "statusCode": 302
-    }
   ]
 }
