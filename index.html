@@ -3,12 +3,15 @@
 <head>
   <title>Static Web Apps Chat</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/css/bootstrap.min.css">
-
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/css/all.min.css" integrity="sha256-h20CPZ0QyXlBuAw7A+KluUYx/3pK+c7lYEpqLTlxjYQ=" crossorigin="anonymous" />
   <style>
-    .slide-fade-enter-active, .slide-fade-leave-active {
+    .slide-fade-enter-active,
+    .slide-fade-leave-active {
       transition: all 1s ease;
     }
-    .slide-fade-enter, .slide-fade-leave-to {
+
+    .slide-fade-enter,
+    .slide-fade-leave-to {
       height: 0px;
       overflow-y: hidden;
       opacity: 0;
@@ -19,45 +22,73 @@
 <body>
   <p>&nbsp;</p>
   <div id="app" class="container">
-    <h3>
-      Static Web Apps Chat
-    </h3>
-    <div class="row" v-if="ready">
-      <div class="signalr-demo col-sm">
-        <hr />
-        <form v-on:submit.prevent="sendNewMessage">
-          <input type="text" v-model="newMessage" id="message-box" class="form-control" placeholder="Type message here..." autocomplete="off" />
-        </form>
-      </div>
+    <div v-if="!authenticatedUser" class="jumbotron">
+      <h1>Welcome to Static Web Apps chat</h1>
+      <hr />
+      <button class="btn btn-dark btn-lg" v-on:click="login()">
+        <i class="fab fa-github"></i>&nbsp;
+        Sign in with GitHub
+      </button>
     </div>
-    <div class="row" v-if="!ready">
-      <div class="col-sm">
-        <div>Loading...</div>
+    <div v-if="authenticatedUser">
+      <div class="row">
+        <div class="col-sm-9">
+          <h3>
+            <img src="https://docs.microsoft.com/en-us/azure/media/index/static-apps.svg" style="height: 32px" />
+            &nbsp;&nbsp;Static Web Apps Chat
+          </h3>
+        </div>
+        <div class="col-sm-3 text-right">
+          <a :href="`https://github.com/${authenticatedUser.userDetails}`">
+            <img :src="`https://github.com/${authenticatedUser.userDetails}.png`" style="width: 24px;" />
+            {{ authenticatedUser.userDetails }}
+          </a>
+          <a href="#" @click.prevent="logout" class="text-info small text-muted">[Logout]</a>
+        </div>
       </div>
-    </div>
-    <div v-if="ready">
-      <transition-group name="slide-fade" tag="div">
-        <div class="row" v-for="message in messages" v-bind:key="message.id">
-          <div class="col-sm">
-            <hr />
-            <div style="vertical-align: top;">
-              <div style="display: inline-block; vertical-align: top;">
-                <img v-bind:src="`https://github.com/${message.sender}.png`" style="width: 64px;" />
-              </div>
-              <div style="display: inline-block; padding-left: 12px; max-width: 90%; vertical-align: top;">
-                <div>
-                  <span class="text-info small"><strong>{{ message.sender }}</strong></span>
-                  <span class="text-info small text-muted" :title="message.timestamp">{{ message.ago }}</span>
+
+      <div class="row" v-if="ready">
+        <div class="signalr-demo col-sm">
+          <hr />
+          <form v-on:submit.prevent="sendNewMessage">
+            <input type="text" v-model="newMessage" id="message-box" class="form-control"
+              placeholder="Type message here..." autocomplete="off" />
+          </form>
+        </div>
+      </div>
+      <div class="row" v-if="!ready">
+        <div class="col-sm">
+          <div>Loading...</div>
+        </div>
+      </div>
+      <div v-if="ready">
+        <transition-group name="slide-fade" tag="div">
+          <div class="row" v-for="message in messages" v-bind:key="message.id">
+            <div class="col-sm">
+              <hr />
+              <div style="vertical-align: top;">
+                <div style="display: inline-block; vertical-align: top;">
+                  <a :href="`https://github.com/${message.sender}`">
+                    <img v-bind:src="`https://github.com/${message.sender}.png`" style="width: 64px;" />
+                  </a>
                 </div>
-                <div>
-                  {{ message.text }}
+                <div style="display: inline-block; padding-left: 12px; max-width: 90%; vertical-align: top;">
+                  <div>
+                    <a :href="`https://github.com/${message.sender}`">
+                      <span class="text-info small"><strong>{{ message.sender }}</strong></span>
+                    </a>
+                    <span class="text-info small text-muted" :title="message.timestamp">{{ message.ago }}</span>
+                  </div>
+                  <div>
+                    {{ message.text }}
+                  </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
       </div>
-    </transition-group>
+      </transition-group>
+    </div>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/vue@2.6.11/dist/vue.js"></script>
@@ -66,13 +97,14 @@
   <script src="https://cdn.jsdelivr.net/npm/timeago.js@4.0.2/dist/timeago.min.js"></script>
 
   <script>
-    const apiBaseUrl = (location.hostname === 'localhost') ? 'http://localhost:7071' :''
+    const apiBaseUrl = isLocal() ? 'http://localhost:7071' : ''
 
     const data = {
       username: '',
       newMessage: '',
       messages: [],
-      ready: false
+      ready: false,
+      authenticatedUser: null
     }
 
     const app = new Vue({
@@ -82,20 +114,40 @@
         sendNewMessage: function () {
           sendMessage(this.username, this.newMessage)
           this.newMessage = ''
+        },
+        login: function() {
+          if (isLocal()) {
+            sessionStorage.setItem('user', JSON.stringify({
+              identityProvider: 'github',
+              userId: '583231',
+              userDetails: 'octocat',
+              userRoles: ['admin', 'anonymous'],
+            }))
+            location.reload()
+          } else {
+            location.href = '/.auth/login/github'
+          }
+        },
+        logout: function () {
+          if (isLocal()) {
+            sessionStorage.removeItem('user')
+            location.reload()
+          } else {
+            location.href = '/.auth/logout'
+          }
         }
       },
-      mounted: function() {
+      mounted: function () {
         setInterval(function updateTimes() {
           this.messages.forEach(m => m.ago = timeago.format(m.timestamp))
         }.bind(this), 10000)
 
-        return axios.get(`${apiBaseUrl}/api/messages`)
-          .then(resp => resp.data)
-          .then(function(messageHistory) {
-            for (const message of messageHistory.reverse()) {
-              newMessage(message)
-            }
-          }.bind(this))
+        return getAuthenticatedUser().then(function (user) {
+          this.authenticatedUser = user
+          if (user) {
+            return loadMessageHistory()
+          }
+        }.bind(this))
       }
     })
 
@@ -124,6 +176,30 @@
       message.id = message.RowKey || counter++
       message.ago = timeago.format(message.timestamp)
       data.messages.unshift(message)
+    }
+
+    function isLocal() {
+      return location.hostname === 'localhost'
+    }
+
+    function getAuthenticatedUser() {
+      if (isLocal()) {
+        return Promise.resolve(JSON.parse(sessionStorage.getItem('user')))
+      } else {
+        return axios.get('/.auth/me')
+          .then(resp => resp.data)
+          .catch(() => null)
+      }
+    }
+
+    function loadMessageHistory() {
+      return axios.get(`${apiBaseUrl}/api/messages`)
+        .then(resp => resp.data)
+        .then(function (messageHistory) {
+          for (const message of messageHistory.reverse()) {
+            newMessage(message)
+          }
+        })
     }
 
   </script>
