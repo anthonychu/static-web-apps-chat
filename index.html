@@ -63,13 +63,13 @@
       </div>
       <div v-if="ready">
         <transition-group name="slide-fade" tag="div">
-          <div class="row" v-for="message in messages" v-bind:key="message.id">
+          <div class="row" v-for="message in messages" :key="message.id">
             <div class="col-sm">
               <hr />
               <div style="vertical-align: top;">
                 <div style="display: inline-block; vertical-align: top;">
                   <a :href="`https://github.com/${message.sender}`">
-                    <img v-bind:src="`https://github.com/${message.sender}.png`" style="width: 64px;" />
+                    <img :src="`https://github.com/${message.sender}.png`" style="width: 64px;" />
                   </a>
                 </div>
                 <div style="display: inline-block; padding-left: 12px; max-width: 90%; vertical-align: top;">
@@ -187,7 +187,7 @@
         return Promise.resolve(JSON.parse(sessionStorage.getItem('user')))
       } else {
         return axios.get('/.auth/me')
-          .then(resp => resp.data)
+          .then(resp => resp.data.clientPrincipal)
           .catch(() => null)
       }
     }
