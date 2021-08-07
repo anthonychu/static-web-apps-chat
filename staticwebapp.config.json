@@ -25,7 +25,8 @@
     ],
     "responseOverrides": {
         "404": {
-            "rewrite": "/custom-404.html"
+            "rewrite": "/custom-404.html",
+            "statusCode": 200
         }
     }
 }

@@ -1,0 +1,33 @@
+{
+  "disabled": false,
+  "bindings": [
+    {
+      "authLevel": "anonymous",
+      "type": "httpTrigger",
+      "direction": "in",
+      "name": "req",
+      "methods": [
+        "post"
+      ],
+      "route": "messages"
+    },
+    {
+      "type": "http",
+      "direction": "out",
+      "name": "res"
+    },
+    {
+      "type": "signalR",
+      "name": "$return",
+      "hubName": "staticwebappschat",
+      "direction": "out"
+    },
+    {
+      "type": "table",
+      "direction": "out",
+      "name": "history",
+      "tableName": "chatmessages",
+      "connection": "StorageConnectionString"
+    }
+  ]
+}
