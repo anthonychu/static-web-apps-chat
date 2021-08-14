@@ -106,7 +106,7 @@
 
 <script>
 import axios from 'axios'
-import timeago from 'timeago'
+import * as timeago from 'timeago.js'
 
 export default {
   name: 'Chat',
@@ -117,6 +117,7 @@ export default {
       messages: [],
       ready: false,
       authenticatedUser: null,
+      counter: 0,
     }
   },
   methods: {
@@ -126,6 +127,11 @@ export default {
     },
     logout: function () {
       location.href = '/.auth/logout'
+    },
+    addNewMessage: function (message) {
+      message.id = message.RowKey || this.counter++
+      message.ago = timeago.format(message.timestamp)
+      this.messages.unshift(message)
     },
   },
   mounted: async function () {
@@ -141,7 +147,14 @@ export default {
       .catch(() => null)
     
     if (this.authenticatedUser) {
-console.log('')
+      const messageHistory = await axios.get(`/api/messages`)
+        .then(resp => resp.data)
+
+      for (const message of messageHistory.reverse()) {
+        this.addNewMessage(message)
+      }
+
+      this.ready = true
     }
   },
 }
@@ -149,18 +162,4 @@ console.log('')
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-h3 {
-  margin: 40px 0 0;
-}
-ul {
-  list-style-type: none;
-  padding: 0;
-}
-li {
-  display: inline-block;
-  margin: 0 10px;
-}
-a {
-  color: #42b983;
-}
 </style>

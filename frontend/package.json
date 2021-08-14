@@ -10,11 +10,10 @@
   "dependencies": {
     "axios": "^0.21.1",
     "core-js": "^3.6.5",
-    "timeago": "^1.6.7",
+    "timeago.js": "^4.0.2",
     "vue": "^2.6.11"
   },
   "devDependencies": {
-    "@types/timeago": "^1.6.0",
     "@vue/cli-plugin-babel": "~4.5.0",
     "@vue/cli-plugin-eslint": "~4.5.0",
     "@vue/cli-service": "~4.5.0",
