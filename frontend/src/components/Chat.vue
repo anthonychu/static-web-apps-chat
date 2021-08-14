@@ -83,7 +83,7 @@
                         <span class="text-info small"
                           ><strong>{{ message.sender }}</strong></span
                         >
-                      </a>
+                      </a>&nbsp;
                       <span
                         class="text-info small text-muted"
                         :title="message.timestamp"
@@ -107,6 +107,7 @@
 <script>
 import axios from 'axios'
 import * as timeago from 'timeago.js'
+import * as signalR from '@microsoft/signalr'
 
 export default {
   name: 'Chat',
@@ -121,14 +122,19 @@ export default {
     }
   },
   methods: {
-    sendNewMessage: function () {},
-    login: function () {
+    async sendNewMessage() {
+      await axios.post('/api/messages', {
+        text: this.newMessage
+      })
+      this.newMessage = ''
+    },
+    login() {
       location.href = '/.auth/login/github'
     },
-    logout: function () {
+    logout() {
       location.href = '/.auth/logout'
     },
-    addNewMessage: function (message) {
+    addNewMessage(message) {
       message.id = message.RowKey || this.counter++
       message.ago = timeago.format(message.timestamp)
       this.messages.unshift(message)
@@ -142,18 +148,29 @@ export default {
       10000
     )
 
-    this.authenticatedUser = await axios.get('/.auth/me')
-      .then(resp => resp.data.clientPrincipal)
+    this.authenticatedUser = await axios
+      .get('/.auth/me')
+      .then((resp) => resp.data.clientPrincipal)
       .catch(() => null)
-    
+
     if (this.authenticatedUser) {
-      const messageHistory = await axios.get(`/api/messages`)
-        .then(resp => resp.data)
+      const messageHistory = await axios
+        .get('/api/messages')
+        .then((resp) => resp.data)
 
       for (const message of messageHistory.reverse()) {
         this.addNewMessage(message)
       }
 
+      const connection = new signalR.HubConnectionBuilder()
+        .withUrl('/api')
+        .withAutomaticReconnect()
+        .build()
+
+      connection.on('newMessage', this.addNewMessage.bind(this))
+      connection.onclose(() => console.log('disconnected'))
+
+      await connection.start()
       this.ready = true
     }
   },
