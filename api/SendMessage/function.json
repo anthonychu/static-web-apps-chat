@@ -23,11 +23,12 @@
       "direction": "out"
     },
     {
-      "type": "table",
+      "type": "cosmosDB",
       "direction": "out",
       "name": "history",
-      "tableName": "chatmessages",
-      "connection": "StorageConnectionString"
+      "databaseName": "chat",
+      "collectionName": "messages",
+      "connectionStringSetting": "CosmosDbConnectionString"
     }
   ]
 }

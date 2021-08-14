@@ -16,12 +16,13 @@
       "name": "res"
     },
     {
-      "type": "table",
+      "type": "cosmosDB",
       "direction": "in",
       "name": "history",
-      "tableName": "chatmessages",
-      "take": "50",
-      "connection": "StorageConnectionString"
+      "databaseName": "chat",
+      "collectionName": "messages",
+      "connectionStringSetting": "CosmosDbConnectionString",
+      "sqlQuery": "select * from c order by c._ts desc"
     }
   ]
 }

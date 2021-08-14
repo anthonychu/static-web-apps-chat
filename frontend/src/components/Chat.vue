@@ -123,10 +123,11 @@ export default {
   },
   methods: {
     async sendNewMessage() {
-      await axios.post('/api/messages', {
-        text: this.newMessage
-      })
+      const message = this.newMessage
       this.newMessage = ''
+      await axios.post('/api/messages', {
+        text: message
+      })
     },
     login() {
       location.href = '/.auth/login/github'
