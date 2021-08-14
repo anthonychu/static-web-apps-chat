@@ -2,19 +2,19 @@
     "routes": [
         {
             "route": "/.auth/login/twitter",
-            "statusCode": "404"
+            "statusCode": 404
         },
         {
             "route": "/.auth/login/facebook",
-            "statusCode": "404"
+            "statusCode": 404
         },
         {
             "route": "/.auth/login/google",
-            "statusCode": "404"
+            "statusCode": 404
         },
         {
             "route": "/.auth/login/aad",
-            "statusCode": "404"
+            "statusCode": 404
         },
         {
             "route": "/api/*",
@@ -22,11 +22,5 @@
                 "authenticated"
             ]
         }
-    ],
-    "responseOverrides": {
-        "404": {
-            "rewrite": "/custom-404.html",
-            "statusCode": 200
-        }
-    }
+    ]
 }
