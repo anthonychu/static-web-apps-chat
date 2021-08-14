@@ -4,7 +4,7 @@ module.exports = {
       config
         .plugin('html')
         .tap(args => {
-          args[0].title = 'Static Web Apps Chat';
+          args[0].title = 'Static Web Apps Chat'
           return args
         })
     }
